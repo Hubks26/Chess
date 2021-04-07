@@ -3,7 +3,7 @@
 const sf::Time Engine::m_timePerFrame = sf::seconds(1.f/24.f);
 
 Engine::Engine()
-: m_window(sf::VideoMode(1600, 1600), "Chess")
+: m_window(sf::VideoMode(600, 600), "Chess")
 , m_board()
 {
 }

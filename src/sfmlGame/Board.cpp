@@ -1,7 +1,7 @@
 #include "Board.h"
 
 Board::Board()
-: m_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+: m_fen("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2")
 {
 	deduceTableFromFen();
 }
@@ -45,6 +45,7 @@ void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	sf::Texture texture;
 	texture.loadFromFile("assets/white/K.png");
+	texture.setSmooth(true);
 	sf::Sprite sprite;
 	sprite.setTexture(texture);
 	sprite.scale(target.getSize().x/1600.f, target.getSize().y/1600.f); // 1600 = 200 * 8 (taille de l'image * nombre de cases)
