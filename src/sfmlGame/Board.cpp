@@ -44,10 +44,15 @@ void Board::deduceTableFromFen()
 void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	sf::Texture texture;
-	texture.loadFromFile("assets/K.png");
+	texture.loadFromFile("assets/white/K.png");
 	sf::Sprite sprite;
 	sprite.setTexture(texture);
 	sprite.scale(target.getSize().x/1600.f, target.getSize().y/1600.f); // 1600 = 200 * 8 (taille de l'image * nombre de cases)
+
+	std::string directory = "assets/";
+	std::string color;
+	std::string ext = ".png";
+	std::string path;
 	
 	sf::RectangleShape rectangle;
 	rectangle.setSize(sf::Vector2f((target.getSize().x+1.f)/8.f, (target.getSize().y+1.f)/8.f));
@@ -67,9 +72,12 @@ void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			char cursor = m_table[j][i];
 			if(pieces.find_first_of(cursor) < pieces.size())
 			{
-				std::string directory = "assets/";
-				std::string ext = ".png";
-				std::string path = directory + cursor + ext;
+				if(int(cursor) <= 90)
+					color = "white/";
+				else
+					color = "black/";
+
+				path = directory + color + cursor + ext;
 				texture.loadFromFile(path);
 				sprite.setPosition((i*target.getSize().x+1.f)/8, (j*target.getSize().y+1.f)/8);
 				target.draw(sprite, states);
