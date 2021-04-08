@@ -1,9 +1,19 @@
 #include "Board.h"
 
 Board::Board()
-: m_fen("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2")
+: m_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 {
 	deduceTableFromFen();
+}
+
+void Board::setPiece(const int x, const int y, const char piece) // x, y en pixels
+{
+	m_table[y][x] = piece;
+}
+
+char Board::getPiece( int x,  int y) const
+{
+	return m_table[y*8/600][x*8/600];
 }
 
 void Board::deduceTableFromFen()
@@ -45,31 +55,32 @@ void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	sf::Texture texture;
 	texture.loadFromFile("assets/white/K.png");
-	texture.setSmooth(true);
 	sf::Sprite sprite;
 	sprite.setTexture(texture);
-	sprite.scale(target.getSize().x/1600.f, target.getSize().y/1600.f); // 1600 = 200 * 8 (taille de l'image * nombre de cases)
+	sf::FloatRect rectSprite = sprite.getLocalBounds();
+	sprite.scale(target.getSize().x/(rectSprite.width*8.f), target.getSize().y/(rectSprite.height*8.f));
+	texture.setSmooth(true);
 
 	std::string directory = "assets/";
 	std::string color;
 	std::string ext = ".png";
 	std::string path;
+	std::string pieces = "pnbrqkPNBRQK";
 	
 	sf::RectangleShape rectangle;
-	rectangle.setSize(sf::Vector2f((target.getSize().x+1.f)/8.f, (target.getSize().y+1.f)/8.f));
+	rectangle.setSize(sf::Vector2f((target.getSize().x)/8.f, (target.getSize().y)/8.f));
 	
 	for (std::size_t i = 0; i < 8; ++i)
 	{
 		for (std::size_t j = 0; j < 8; ++j)
 		{
-			rectangle.setPosition((i*target.getSize().x+1.f)/8, (j*target.getSize().y+1.f)/8);
+			rectangle.setPosition((i*target.getSize().x)/8, (j*target.getSize().y)/8);
 			if((i+j)%2 == 0)
 				rectangle.setFillColor(sf::Color(240, 217, 181));
 			else
 				rectangle.setFillColor(sf::Color(181, 136, 99));
 			target.draw(rectangle, states);
 			
-			std::string pieces = "pnbrqkPNBRQK";
 			char cursor = m_table[j][i];
 			if(pieces.find_first_of(cursor) < pieces.size())
 			{
@@ -80,7 +91,7 @@ void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 				path = directory + color + cursor + ext;
 				texture.loadFromFile(path);
-				sprite.setPosition((i*target.getSize().x+1.f)/8, (j*target.getSize().y+1.f)/8);
+				sprite.setPosition((i*target.getSize().x)/8, (j*target.getSize().y)/8);
 				target.draw(sprite, states);
 			}
 		}
