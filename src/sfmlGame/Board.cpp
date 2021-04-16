@@ -58,14 +58,6 @@ Board::Board(std::string fen)
 	
 	m_nbRep = std::stoi(vectFen[4]);
 	m_nbMoves = std::stoi(vectFen[5]);
-
-	ListOfMoves moves = allMoves();
-	for (auto it = moves.begin(); it != moves.end(); ++it)
-	{
-		std::cout << std::get<0>(*it) << '/' << std::get<1>(*it) << std::endl;
-	}
-	std::cout << std::endl;
-	std::cout << moves.size() << std::endl;
 }
 
 void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const

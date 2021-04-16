@@ -3,14 +3,10 @@
 const sf::Time Engine::m_timePerFrame = sf::seconds(1.f/120.f);
 
 Engine::Engine()
-: m_window(sf::VideoMode(600, 600), "Chess")
+: m_window(sf::VideoMode(656, 656), "Chess")
 , m_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 , m_posOfSelectedPiece(-1)
 {
-	/*
-	std::tuple<int, int, Type> move(50, 34, Type::None);
-	m_board.moveAPiece(move);
-	*/
 }
 
 void Engine::run()
@@ -109,8 +105,11 @@ bool Engine::isInsideWindow() const
 {
 	bool flag = false;
 
-	if (sf::Mouse::getPosition(m_window).x>0 && sf::Mouse::getPosition(m_window).x< 600 &&
-		sf::Mouse::getPosition(m_window).y>0 && sf::Mouse::getPosition(m_window).y< 600)
+	int winX = m_window.getSize().x;
+	int winY = m_window.getSize().y;
+
+	if (sf::Mouse::getPosition(m_window).x>0 && sf::Mouse::getPosition(m_window).x< winX &&
+		sf::Mouse::getPosition(m_window).y>0 && sf::Mouse::getPosition(m_window).y< winY)
 	{
 		flag = true;
 	}
@@ -120,7 +119,7 @@ bool Engine::isInsideWindow() const
 
 int Engine::deduceCaseFromMousePosition() const
 {
-	int x = int(sf::Mouse::getPosition(m_window).x*8/600);
-	int y = int(sf::Mouse::getPosition(m_window).y*8/600);
+	int x = int(sf::Mouse::getPosition(m_window).x*8/m_window.getSize().x);
+	int y = int(sf::Mouse::getPosition(m_window).y*8/m_window.getSize().y);
 	return x + 8*y;
 }
