@@ -9,24 +9,24 @@ public :
 	
 	Engine();
 	void run();
-    void handleMouseInput(sf::Mouse::Button mouse, bool isPressed);
-	bool isInsideWindow(void) const;
 
 private :
 	
 	void processEvents();
 	void update();
 	void render();
+
+	void handleMouseInput(sf::Mouse::Button, bool);
+	bool isInsideWindow() const;
+	int deduceCaseFromMousePosition() const;
 	
 private :
 	sf::RenderWindow m_window;
 	static const sf::Time m_timePerFrame;
-	bool m_mouseL=false, m_mouseLPressed = false;
-
-	char m_chosenPiece;
-	sf::Vector2i m_pieceCoord;
+	
 	Board m_board;
-	sf::Texture m_texture;
+	int m_posOfSelectedPiece;
+	bool m_mouseL, m_mouseLPressed;
 	sf::Sprite m_pieceSprite;
 };
 

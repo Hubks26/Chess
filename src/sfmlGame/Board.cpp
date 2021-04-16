@@ -1,72 +1,75 @@
 #include "Board.h"
 
-Board::Board()
-: m_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+Board::Board(std::string fen)
 {
-	deduceTableFromFen();
-}
-
-void Board::setPiece(const int x, const int y, const char piece) // x, y en pixels
-{
-	m_table[y][x] = piece;
-}
-
-char Board::getPiece( int x,  int y) const
-{
-	return m_table[y*8/600][x*8/600];
-}
-
-void Board::deduceTableFromFen()
-{
-	for(std::size_t i = 0; i < 8; ++i)
-	{
-		for(std::size_t j = 0; j < 8; ++j)
-		{
-			m_table[i][j] = '0';
-		}
-	}
-	
-	std::size_t row = 0;
-	std::size_t col = 0;
+	m_fen = fen;
 	std::size_t s = m_fen.size();
+	std::vector<std::string> vectFen;
 	std::string num = "12345678";
+	char cell;
+	
+	vectFen.push_back("");
 	
 	for(std::size_t i = 0; i < s; ++i)
 	{
-		char cell = m_fen[i];
+		cell = m_fen[i];
 		if(cell == ' ')
-			break;
-		else if(cell == '/')
 		{
-			++row;
-			col = 0;
+			vectFen.push_back("");
 		}
-		else if(num.find_first_of(cell) < s)
-			col += cell - '0';
 		else
 		{
-			m_table[row][col] = cell;
-			++col;
+			vectFen[vectFen.size()-1] += cell;
 		}
 	}
+	
+	for(std::size_t i = 0; i < vectFen[0].size(); ++i)
+	{
+		cell = vectFen[0][i];
+		if(num.find_first_of(cell) < num.size())
+		{
+			for (std::size_t j = 0; j < unsigned(cell - '0'); ++j)
+			{	
+				m_cases.push_back(new Piece('-'));
+			}
+		}
+		else if(cell != '/')
+		{
+			m_cases.push_back(new Piece(cell));
+		}
+	}
+	
+	m_whiteToPlay = (vectFen[1] == "w");
+	
+	m_roqueK = vectFen[2].find_first_of('K') < vectFen[2].size();
+	m_roqueQ = vectFen[2].find_first_of('Q') < vectFen[2].size();
+	m_roquek = vectFen[2].find_first_of('k') < vectFen[2].size();
+	m_roqueq = vectFen[2].find_first_of('q') < vectFen[2].size();
+	
+	m_caseEnPassant = -1;
+	if (vectFen[3] != "-")
+	{
+		for (std::size_t i = 0; i < coord.size(); ++i)
+		{
+			if (vectFen[3] == coord[i])
+				m_caseEnPassant = i;
+		}
+	}
+	
+	m_nbRep = std::stoi(vectFen[4]);
+	m_nbMoves = std::stoi(vectFen[5]);
+
+	ListOfMoves moves = allMoves();
+	for (auto it = moves.begin(); it != moves.end(); ++it)
+	{
+		std::cout << std::get<0>(*it) << '/' << std::get<1>(*it) << std::endl;
+	}
+	std::cout << std::endl;
+	std::cout << moves.size() << std::endl;
 }
 
 void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	sf::Texture texture;
-	texture.loadFromFile("assets/white/K.png");
-	sf::Sprite sprite;
-	sprite.setTexture(texture);
-	sf::FloatRect rectSprite = sprite.getLocalBounds();
-	sprite.scale(target.getSize().x/(rectSprite.width*8.f), target.getSize().y/(rectSprite.height*8.f));
-	texture.setSmooth(true);
-
-	std::string directory = "assets/";
-	std::string color;
-	std::string ext = ".png";
-	std::string path;
-	std::string pieces = "pnbrqkPNBRQK";
-	
 	sf::RectangleShape rectangle;
 	rectangle.setSize(sf::Vector2f((target.getSize().x)/8.f, (target.getSize().y)/8.f));
 	
@@ -81,36 +84,153 @@ void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
 				rectangle.setFillColor(sf::Color(181, 136, 99));
 			target.draw(rectangle, states);
 			
-			char cursor = m_table[j][i];
-			if(pieces.find_first_of(cursor) < pieces.size())
-			{
-				if(int(cursor) <= 90)
-					color = "white/";
-				else
-					color = "black/";
-
-				path = directory + color + cursor + ext;
-				texture.loadFromFile(path);
-				sprite.setPosition((i*target.getSize().x)/8, (j*target.getSize().y)/8);
-				target.draw(sprite, states);
-			}
+			sf::Sprite sprite = m_cases[i+j*8]->getSprite();
+			sf::FloatRect rectPiece = sprite.getLocalBounds();
+			sprite.scale(target.getSize().x/(rectPiece.width*8.f), target.getSize().y/(rectPiece.height*8.f));
+			sprite.setPosition((i*target.getSize().x)/8, (j*target.getSize().y)/8);
+			target.draw(sprite, states);
 		}
 	}
 }
 
-void Board::print() const
+void Board::printBoard() const
 {
+	for(std::size_t i = 0; i < m_cases.size(); ++i)
+	{
+		if(i%8 == 0)
+		{
+			std::cout << std::endl;
+			std::cout << "\t+---+---+---+---+---+---+---+---+" << std::endl;
+			std::cout << "\t| ";
+		}
+		std::cout << m_cases[i]->m_code << " | ";
+	}	
 	std::cout << std::endl;
 	std::cout << "\t+---+---+---+---+---+---+---+---+" << std::endl;
-	for(std::size_t i = 0; i < 8; ++i)
-	{
-		std::cout << "\t| ";
-		for(std::size_t j = 0; j < 8; ++j)
-		{
-			std::cout << m_table[i][j] << " | ";
-		}
-		std::cout << std::endl;
-		std::cout << "\t+---+---+---+---+---+---+---+---+" << std::endl;
-	}
 	std::cout << std::endl;
+	
+	if (m_whiteToPlay)
+		std::cout << " White to play" << std::endl;
+	else std::cout << " Black to play" << std::endl;
+}
+
+ListOfMoves Board::allMoves(Color c, bool dontCallIsAttacked) const
+{
+	ListOfMoves moves;
+	ListOfMoves pieceMoves;
+
+	if (c == Color::Null)
+	{
+		if (m_whiteToPlay) {c = Color::WHITE;}
+		else {c = Color::BLACK;}
+	}
+	
+	for (int p64 = 0; p64 < 64; ++p64)
+	{
+		if (m_cases[p64]->m_color != c) {continue;}
+		if (m_cases[p64]->m_type == Type::KING) 
+		{
+			pieceMoves = m_cases[p64]->movesForKing(p64, this, c, dontCallIsAttacked);
+			moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+			continue;
+		}
+		if (m_cases[p64]->m_type == Type::QUEEN)
+		{
+			pieceMoves = m_cases[p64]->movesForRook(p64, this, c);
+			moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+			pieceMoves = m_cases[p64]->movesForBishop(p64, this, c);
+			moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+			continue;
+		}
+		if (m_cases[p64]->m_type == Type::ROOK) 
+		{
+			pieceMoves = m_cases[p64]->movesForRook(p64, this, c);
+			moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+			continue;
+		}
+		if (m_cases[p64]->m_type == Type::BISHOP) 
+		{
+			pieceMoves = m_cases[p64]->movesForBishop(p64, this, c);
+			moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+			continue;
+		}
+		if (m_cases[p64]->m_type == Type::KNIGHT) 
+		{
+			pieceMoves = m_cases[p64]->movesForKnight(p64, this, c);
+			moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+			continue;
+		}
+		if (m_cases[p64]->m_type == Type::PAWN) 
+		{
+			pieceMoves = m_cases[p64]->movesForPawn(p64, this, c);
+			moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+			continue;
+		}
+	}
+
+	return moves;
+}
+
+void Board::moveAPiece(std::tuple<int, int, Type> move)
+{
+	bool moveExist = false;
+	int p64 = std::get<0>(move);
+	int p64AfterMove = std::get<1>(move);
+	Type promotion = std::get<2>(move);
+	ListOfMoves moves = allMoves();
+	for (auto it = moves.begin(); it != moves.end(); ++it)
+	{
+		if (*it == move)
+		{
+			moveExist = true;
+			break;
+		}
+	}
+
+	if (moveExist)
+	{
+		if (m_cases[p64AfterMove]->m_type == Type::None &&
+			promotion == Type::None &&
+			m_caseEnPassant != p64AfterMove)
+		{
+			m_cases[p64AfterMove] = m_cases[p64];
+			m_cases[p64] = new Piece('-');
+		}
+
+		toggleTurn();
+	}
+}
+
+bool Board::isPieceUnderAttack(unsigned int p64, Color c) const
+{
+	bool flag = false;
+	ListOfMoves moves;
+	moves = allMoves(c, true);
+
+	for (auto it = moves.begin(); it != moves.end(); ++it)
+	{
+		if(std::get<1>(*it) == p64) {flag = true;}
+	}
+
+	return flag;
+}
+
+bool Board::isKingUnderAttack(Color c) const
+{
+	unsigned int p64;
+	for(int i = 0; i < 64; ++i)
+	{
+		if(m_cases[i]->m_type == Type::KING && m_cases[i]->m_color == c)
+		{
+			p64 = i;
+			break;
+		}
+	}
+
+	return isPieceUnderAttack(p64, c);
+}
+
+void Board::toggleTurn()
+{
+	m_whiteToPlay = !m_whiteToPlay;
 }

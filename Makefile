@@ -16,8 +16,11 @@ $(O)/Main.o: $(O)/Engine.o
 $(O)/Engine.o: $(O)/Board.o
 	$(CC) $(S)/sfmlGame/Engine.cpp -c -o $(O)/Engine.o $(STD) $(FLAGS)
 
-$(O)/Board.o:
+$(O)/Board.o: $(O)/Piece.o
 	$(CC) $(S)/sfmlGame/Board.cpp -c -o $(O)/Board.o $(STD) $(FLAGS)
+
+$(O)/Piece.o:
+	$(CC) $(S)/sfmlGame/Piece.cpp -c -o $(O)/Piece.o $(STD) $(FLAGS)
 
 clean: $(O) $(B)
 	rm -r $(O)
