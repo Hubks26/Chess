@@ -245,6 +245,11 @@ void Board::moveAPiece(std::tuple<int, int, Type> move)
 		}
 		else {m_caseEnPassant = -1;}
 
+		if (std::get<2>(move) != Type::None)
+		{
+			m_cases[p64AfterMove] = new Piece(m_cases[p64AfterMove]->m_color, std::get<2>(move));
+		}
+
 		toggleTurn();
 	}
 }

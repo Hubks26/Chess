@@ -83,6 +83,62 @@ Piece::Piece(char c)
 	}
 }
 
+Piece::Piece(Color c, Type type)
+{
+	std::string directory = "assets/";
+	std::string colorStr;
+	std::string ext = ".png";
+	std::string path;
+	char c_min;
+
+	m_color = c;
+	m_type = type;
+
+	if (c == Color::WHITE)
+	{
+		colorStr = "white/";
+	}
+	else if (c == Color::BLACK)
+	{
+		colorStr = "black/";
+	}
+
+	switch (type)
+	{
+		case Type::PAWN:
+			c_min = 'p';
+			break;
+		case Type::KNIGHT:
+			c_min = 'n';
+			break;
+		case Type::BISHOP:
+			c_min = 'b';
+			break;
+		case Type::ROOK:
+			c_min = 'r';
+			break;
+		case Type::QUEEN:
+			c_min = 'q';
+			break;
+		case Type::KING:
+			c_min = 'k';
+			break;
+		default:
+			c_min = '-';
+			break;
+	}
+
+	if (m_type != Type::None)
+	{
+		if (m_color == Color::WHITE) {m_code = c_min - 32;}
+		else {m_code = c_min;}
+		path = directory + colorStr + c_min + ext;
+		m_texture.loadFromFile(path);
+		m_texture.setSmooth(true);
+		m_sprite.setTexture(m_texture);
+	}
+}
+
 sf::Sprite Piece::getSprite() const
 {
 	return m_sprite;

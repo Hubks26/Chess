@@ -61,6 +61,7 @@ class Piece
 		
 	public :
 		Piece(char);
+		Piece(Color, Type);
 		
 		sf::Sprite getSprite() const;
 		

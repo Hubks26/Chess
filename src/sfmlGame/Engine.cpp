@@ -8,6 +8,7 @@ Engine::Engine()
 , m_posOfSelectedPiece(-1)
 , m_mouseL(false)
 , m_mouseLPressed(false)
+, m_test_promo(2, Color::WHITE, m_window)
 {
 }
 
@@ -67,6 +68,21 @@ void Engine::update()
 		if(m_posOfSelectedPiece != -1 && !m_mouseL)
 		{
 			pAfterMove = deduceCaseFromMousePosition();
+
+			if (m_board.m_cases[m_posOfSelectedPiece]->m_type == Type::PAWN)
+			{
+				if (m_board.m_cases[m_posOfSelectedPiece]->m_color == Color::WHITE &&
+					pAfterMove/8 == 0)
+				{
+					m_board.moveAPiece(std::tuple<int, int, Type>(m_posOfSelectedPiece, pAfterMove, Type::QUEEN));
+				}
+				else if (m_board.m_cases[m_posOfSelectedPiece]->m_color == Color::BLACK &&
+					pAfterMove/8 == 7)
+				{
+					m_board.moveAPiece(std::tuple<int, int, Type>(m_posOfSelectedPiece, pAfterMove, Type::QUEEN));
+				}
+			}
+
 			m_board.moveAPiece(std::tuple<int, int, Type>(m_posOfSelectedPiece, pAfterMove, Type::None));
 			m_posOfSelectedPiece = -1;
 		}
@@ -91,6 +107,7 @@ void Engine::render()
 	{
 		m_window.draw(m_pieceSprite);
 	}
+	m_window.draw(m_test_promo);
 	m_window.display();
 }
 

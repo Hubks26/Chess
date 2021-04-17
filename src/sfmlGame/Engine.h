@@ -2,6 +2,7 @@
 #define ENGINE_H
 
 #include "Board.h"
+#include "Promotion.h"
 
 class Engine
 {
@@ -28,6 +29,8 @@ private :
 	int m_posOfSelectedPiece;
 	bool m_mouseL, m_mouseLPressed;
 	sf::Sprite m_pieceSprite;
+
+	Promotion m_test_promo;
 };
 
 #endif //ENGINE_H
