@@ -209,7 +209,7 @@ bool Board::isPieceUnderAttack(unsigned int p64, Color c) const
 
 bool Board::isKingUnderAttack(Color c) const
 {
-	unsigned int p64;
+	unsigned int p64 = -1;
 	for(int i = 0; i < 64; ++i)
 	{
 		if(m_cases[i]->m_type == Type::KING && m_cases[i]->m_color == c)

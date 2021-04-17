@@ -6,6 +6,8 @@ Engine::Engine()
 : m_window(sf::VideoMode(656, 656), "Chess")
 , m_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 , m_posOfSelectedPiece(-1)
+, m_mouseL(false)
+, m_mouseLPressed(false)
 {
 }
 
