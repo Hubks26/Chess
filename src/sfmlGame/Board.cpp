@@ -168,7 +168,7 @@ void Board::moveAPiece(std::tuple<int, int, Type> move)
 	bool moveExist = false;
 	int p64 = std::get<0>(move);
 	int p64AfterMove = std::get<1>(move);
-	Type promotion = std::get<2>(move);
+	//Type promotion = std::get<2>(move);
 	ListOfMoves moves = allMoves();
 	for (auto it = moves.begin(); it != moves.end(); ++it)
 	{
@@ -181,45 +181,69 @@ void Board::moveAPiece(std::tuple<int, int, Type> move)
 
 	if (moveExist)
 	{
-		if (promotion == Type::None &&
-			m_caseEnPassant != p64AfterMove)
-		{
-			m_cases[p64AfterMove] = m_cases[p64];
-			m_cases[p64] = new Piece('-');
+		m_cases[p64AfterMove] = m_cases[p64];
+		m_cases[p64] = new Piece('-');
 
-			if (move == std::tuple<int, int, Type>(4, 6, Type::None) &&
-				m_cases[6]->m_type == Type::KING)
+		if (move == std::tuple<int, int, Type>(4, 6, Type::None) &&
+			m_cases[6]->m_type == Type::KING)
+		{
+			m_cases[5] = m_cases[7];
+			m_cases[7] = new Piece('-');
+		}
+		else if	(move == std::tuple<int, int, Type>(4, 2, Type::None) &&
+					m_cases[2]->m_type == Type::KING)
+		{
+			m_cases[3] = m_cases[0];
+			m_cases[0] = new Piece('-');
+		}
+		else if	(move == std::tuple<int, int, Type>(60, 62, Type::None) &&
+					m_cases[62]->m_type == Type::KING)
+		{
+			m_cases[61] = m_cases[63];
+			m_cases[63] = new Piece('-');
+		}
+		else if	(move == std::tuple<int, int, Type>(60, 58, Type::None) &&
+					m_cases[58]->m_type == Type::KING)
+		{
+			m_cases[59] = m_cases[56];
+			m_cases[56] = new Piece('-');
+		}
+
+		if (m_cases[p64AfterMove]->m_type == Type::KING)
+		{
+			if (m_cases[p64AfterMove]->m_color == Color::WHITE) 
 			{
-				m_cases[5] = m_cases[7];
-				m_cases[7] = new Piece('-');
-				m_roquek = false;
-				m_roqueq = false;
-			}
-			else if	(move == std::tuple<int, int, Type>(4, 2, Type::None) &&
-					 m_cases[2]->m_type == Type::KING)
-			{
-				m_cases[3] = m_cases[0];
-				m_cases[0] = new Piece('-');
-				m_roquek = false;
-				m_roqueq = false;
-			}
-			else if	(move == std::tuple<int, int, Type>(60, 62, Type::None) &&
-					 m_cases[62]->m_type == Type::KING)
-			{
-				m_cases[61] = m_cases[63];
-				m_cases[63] = new Piece('-');
 				m_roqueK = false;
 				m_roqueQ = false;
 			}
-			else if	(move == std::tuple<int, int, Type>(60, 58, Type::None) &&
-					 m_cases[58]->m_type == Type::KING)
+			else
 			{
-				m_cases[59] = m_cases[56];
-				m_cases[56] = new Piece('-');
-				m_roqueK = false;
-				m_roqueQ = false;
+				m_roquek = false;
+				m_roqueq = false;
 			}
 		}
+		if (p64 == 0) {m_roqueq = false;}
+		if (p64 == 7) {m_roquek = false;}
+		if (p64 == 56) {m_roqueQ = false;}
+		if (p64 == 63) {m_roqueK = false;}
+
+		if (m_cases[p64AfterMove]->m_type == Type::PAWN &&
+			p64AfterMove == m_caseEnPassant)
+		{
+			if (p64AfterMove/8 == 2)
+				{m_cases[p64AfterMove + 8] = new Piece('-');}
+			else if (p64AfterMove/8 == 5)
+				{m_cases[p64AfterMove - 8] = new Piece('-');}
+		}
+
+		if (m_cases[p64AfterMove]->m_type == Type::PAWN)
+		{
+			if (p64/8-p64AfterMove/8 == -2)
+				{m_caseEnPassant = p64AfterMove - 8;}
+			else if (p64/8-p64AfterMove/8 == 2)
+				{m_caseEnPassant = p64AfterMove + 8;}
+		}
+		else {m_caseEnPassant = -1;}
 
 		toggleTurn();
 	}
