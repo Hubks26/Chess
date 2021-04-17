@@ -187,6 +187,39 @@ void Board::moveAPiece(std::tuple<int, int, Type> move)
 		{
 			m_cases[p64AfterMove] = m_cases[p64];
 			m_cases[p64] = new Piece('-');
+
+			if (move == std::tuple<int, int, Type>(4, 6, Type::None) &&
+				m_cases[6]->m_type == Type::KING)
+			{
+				m_cases[5] = m_cases[7];
+				m_cases[7] = new Piece('-');
+				m_roquek = false;
+				m_roqueq = false;
+			}
+			else if	(move == std::tuple<int, int, Type>(4, 2, Type::None) &&
+					 m_cases[2]->m_type == Type::KING)
+			{
+				m_cases[3] = m_cases[0];
+				m_cases[0] = new Piece('-');
+				m_roquek = false;
+				m_roqueq = false;
+			}
+			else if	(move == std::tuple<int, int, Type>(60, 62, Type::None) &&
+					 m_cases[62]->m_type == Type::KING)
+			{
+				m_cases[61] = m_cases[63];
+				m_cases[63] = new Piece('-');
+				m_roqueK = false;
+				m_roqueQ = false;
+			}
+			else if	(move == std::tuple<int, int, Type>(60, 58, Type::None) &&
+					 m_cases[58]->m_type == Type::KING)
+			{
+				m_cases[59] = m_cases[56];
+				m_cases[56] = new Piece('-');
+				m_roqueK = false;
+				m_roqueQ = false;
+			}
 		}
 
 		toggleTurn();
