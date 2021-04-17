@@ -181,8 +181,7 @@ void Board::moveAPiece(std::tuple<int, int, Type> move)
 
 	if (moveExist)
 	{
-		if (m_cases[p64AfterMove]->m_type == Type::None &&
-			promotion == Type::None &&
+		if (promotion == Type::None &&
 			m_caseEnPassant != p64AfterMove)
 		{
 			m_cases[p64AfterMove] = m_cases[p64];
