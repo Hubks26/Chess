@@ -32,6 +32,7 @@ class Board : public sf::Drawable
 		void setPosition(std::string fen);
 		std::string getFEN() const;
 		void moveAPiece(std::tuple<int, int, Type>);
+		bool isMovePossible(std::tuple<int, int, Type>) const;
 		void undo();
 		void toggleTurn();
 		bool isKingUnderAttack(Color) const;

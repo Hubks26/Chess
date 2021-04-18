@@ -20,6 +20,7 @@ private :
 	void handleMouseInput(sf::Mouse::Button, bool);
 	bool isInsideWindow() const;
 	int deduceCaseFromMousePosition() const;
+	Type deducePromotionFromMousePosition() const;
 	
 private :
 	sf::RenderWindow m_window;
@@ -29,8 +30,8 @@ private :
 	int m_posOfSelectedPiece;
 	bool m_mouseL, m_mouseLPressed;
 	sf::Sprite m_pieceSprite;
-
-	Promotion test;
+	Promotion m_promotionDisp;
+	int m_pawnPositionBeforePromotion;
 };
 
 #endif //ENGINE_H

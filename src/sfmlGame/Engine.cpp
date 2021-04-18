@@ -8,7 +8,8 @@ Engine::Engine()
 , m_posOfSelectedPiece(-1)
 , m_mouseL(false)
 , m_mouseLPressed(false)
-, test(0, Color::Null, m_window)
+, m_promotionDisp(0, Color::Null, m_window)
+, m_pawnPositionBeforePromotion(-1)
 {
 }
 
@@ -58,41 +59,97 @@ void Engine::processEvents()
 void Engine::update()
 {
 	int pAfterMove;
-	if(isInsideWindow())
+
+	if (m_promotionDisp.isOpen() && isInsideWindow())
 	{
-		if(m_mouseL && !m_mouseLPressed)
+		if (m_mouseL)
 		{
 			m_posOfSelectedPiece = deduceCaseFromMousePosition();
-			m_board.m_posOfSelectedPiece = m_posOfSelectedPiece;
-			this->m_mouseLPressed=true;
-		}
-		if(m_posOfSelectedPiece != -1 && !m_mouseL)
-		{
-			pAfterMove = deduceCaseFromMousePosition();
-
-			if (m_board.m_cases[m_posOfSelectedPiece]->m_type == Type::PAWN)
+			if (m_posOfSelectedPiece == m_promotionDisp.m_col &&
+				m_promotionDisp.m_color == Color::WHITE)
 			{
-				if (m_board.m_cases[m_posOfSelectedPiece]->m_color == Color::WHITE &&
-					pAfterMove/8 == 0)
-				{	
-					test.m_col = pAfterMove%8;
-					test.m_color = Color::WHITE;
-					test.open();
-					m_board.moveAPiece(std::tuple<int, int, Type>(m_posOfSelectedPiece, pAfterMove, Type::QUEEN));
-				}
-				else if (m_board.m_cases[m_posOfSelectedPiece]->m_color == Color::BLACK &&
-					pAfterMove/8 == 7)
-				{
-					test.m_col = pAfterMove%8;
-					test.m_color = Color::BLACK;
-					test.open();
-					m_board.moveAPiece(std::tuple<int, int, Type>(m_posOfSelectedPiece, pAfterMove, Type::QUEEN));
-				}
+				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col, Type::QUEEN));
 			}
-
-			m_board.moveAPiece(std::tuple<int, int, Type>(m_posOfSelectedPiece, pAfterMove, Type::None));
+			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 8 &&
+				m_promotionDisp.m_color == Color::WHITE)
+			{
+				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col, Type::KNIGHT));
+			}
+			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 16 &&
+				m_promotionDisp.m_color == Color::WHITE)
+			{
+				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col, Type::ROOK));
+			}
+			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 24 &&
+				m_promotionDisp.m_color == Color::WHITE)
+			{
+				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col, Type::BISHOP));
+			}
+			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 32 &&
+				m_promotionDisp.m_color == Color::BLACK)
+			{
+				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col+7*8, Type::BISHOP));
+			}
+			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 40 &&
+				m_promotionDisp.m_color == Color::BLACK)
+			{
+				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col+7*8, Type::ROOK));
+			}
+			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 48 &&
+				m_promotionDisp.m_color == Color::BLACK)
+			{
+				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col+7*8, Type::KNIGHT));
+			}
+			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 56 &&
+				m_promotionDisp.m_color == Color::BLACK)
+			{
+				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col+7*8, Type::QUEEN));
+			}
+			m_promotionDisp.close();
 			m_posOfSelectedPiece = -1;
-			m_board.m_posOfSelectedPiece = -1;
+			m_pawnPositionBeforePromotion = -1;
+		}
+	}
+	else
+	{
+		if (isInsideWindow())
+		{
+			if(m_mouseL && !m_mouseLPressed)
+			{
+				m_posOfSelectedPiece = deduceCaseFromMousePosition();
+				m_board.m_posOfSelectedPiece = m_posOfSelectedPiece;
+				this->m_mouseLPressed=true;
+			}
+			if(m_posOfSelectedPiece != -1 && !m_mouseL)
+			{
+				pAfterMove = deduceCaseFromMousePosition();
+
+				if (m_board.m_cases[m_posOfSelectedPiece]->m_type == Type::PAWN)
+				{
+					if (m_board.m_cases[m_posOfSelectedPiece]->m_color == Color::WHITE &&
+						pAfterMove/8 == 0 &&
+						m_board.isMovePossible(std::tuple<int, int, Type>(m_posOfSelectedPiece, pAfterMove, Type::QUEEN)))
+					{	
+						m_promotionDisp.m_col = pAfterMove%8;
+						m_promotionDisp.m_color = Color::WHITE;
+						m_promotionDisp.open();
+						m_pawnPositionBeforePromotion = m_posOfSelectedPiece;
+					}
+					else if (m_board.m_cases[m_posOfSelectedPiece]->m_color == Color::BLACK &&
+						pAfterMove/8 == 7 &&
+						m_board.isMovePossible(std::tuple<int, int, Type>(m_posOfSelectedPiece, pAfterMove, Type::QUEEN)))
+					{
+						m_promotionDisp.m_col = pAfterMove%8;
+						m_promotionDisp.m_color = Color::BLACK;
+						m_promotionDisp.open();
+						m_pawnPositionBeforePromotion = m_posOfSelectedPiece;
+					}
+				}
+
+				m_board.moveAPiece(std::tuple<int, int, Type>(m_posOfSelectedPiece, pAfterMove, Type::None));
+				m_posOfSelectedPiece = -1;
+				m_board.m_posOfSelectedPiece = -1;
+			}
 		}
 	}
 
@@ -115,7 +172,7 @@ void Engine::render()
 	{
 		m_window.draw(m_pieceSprite);
 	}
-	m_window.draw(test);
+	m_window.draw(m_promotionDisp);
 	m_window.display();
 }
 

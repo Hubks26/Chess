@@ -193,21 +193,10 @@ ListOfMoves Board::allMoves(Color c, bool dontCallIsAttacked) const
 
 void Board::moveAPiece(std::tuple<int, int, Type> move)
 {
-	bool moveExist = false;
 	int p64 = std::get<0>(move);
 	int p64AfterMove = std::get<1>(move);
-	//Type promotion = std::get<2>(move);
-	ListOfMoves moves = allMoves();
-	for (auto it = moves.begin(); it != moves.end(); ++it)
-	{
-		if (*it == move)
-		{
-			moveExist = true;
-			break;
-		}
-	}
 
-	if (moveExist)
+	if (isMovePossible(move))
 	{
 		m_cases[p64AfterMove] = m_cases[p64];
 		m_cases[p64] = new Piece('-');
@@ -281,8 +270,21 @@ void Board::moveAPiece(std::tuple<int, int, Type> move)
 
 		toggleTurn();
 	}
+}
 
-	std::cout << m_caseEnPassant << std::endl;
+bool Board::isMovePossible(std::tuple<int, int, Type> move) const
+{
+	bool moveExist = false;
+	ListOfMoves moves = allMoves();
+	for (auto it = moves.begin(); it != moves.end(); ++it)
+	{
+		if (*it == move)
+		{
+			moveExist = true;
+			break;
+		}
+	}
+	return moveExist;
 }
 
 bool Board::isPieceUnderAttack(unsigned int p64, Color c) const

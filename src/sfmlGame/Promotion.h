@@ -11,6 +11,8 @@ class Promotion : public sf::Drawable
         Promotion(unsigned int, Color, sf::Window&);
 
         void open();
+        void close();
+        bool isOpen();
 
     private:
         virtual void draw(sf::RenderTarget&, sf::RenderStates) const;

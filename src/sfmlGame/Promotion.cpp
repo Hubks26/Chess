@@ -22,6 +22,16 @@ void Promotion::open()
     m_open = true;
 }
 
+void Promotion::close()
+{
+    m_open = false;
+}
+
+bool Promotion::isOpen()
+{
+    return m_open;
+}
+
 void Promotion::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     if (m_open)
