@@ -55,6 +55,7 @@ class Board : public sf::Drawable
 		int m_nbRep;
 		int m_nbMoves;
 		ListOfMoves m_pgn;
+		int m_posOfSelectedPiece;
 };
 
 #endif //PIECE_H

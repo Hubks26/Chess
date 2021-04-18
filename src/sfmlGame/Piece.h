@@ -70,6 +70,8 @@ class Piece
 		ListOfMoves movesForRook(int, const Board*, Color) const;
 		ListOfMoves movesForBishop(int, const Board*, Color) const;
 		ListOfMoves movesForPawn(int, const Board*, Color) const;
+
+		ListOfMoves movesForPiece(int, const Board*, Color) const;
 		
 	public :
 		char m_code;

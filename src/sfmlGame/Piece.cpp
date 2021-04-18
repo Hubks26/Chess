@@ -425,3 +425,53 @@ ListOfMoves Piece::movesForPawn(int p64, const Board* board, Color c) const
 
 	return liste;
 }
+
+ListOfMoves Piece::movesForPiece(int p64, const Board* board, Color c) const
+{
+	ListOfMoves pieceMoves;
+	ListOfMoves moves;
+	Type type = board->m_cases[p64]->m_type;
+
+	if (board->m_cases[p64]->m_color == c)
+	{	
+		switch (type)
+		{
+			case Type::KING:
+				pieceMoves = board->m_cases[p64]->movesForKing(p64, board, c);
+				moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+				break;
+
+			case Type::QUEEN:
+				pieceMoves = board->m_cases[p64]->movesForRook(p64, board, c);
+				moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+				pieceMoves = board->m_cases[p64]->movesForBishop(p64, board, c);
+				moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+				break;
+		
+			case Type::ROOK:
+				pieceMoves = board->m_cases[p64]->movesForRook(p64, board, c);
+				moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+				break;
+		
+			case Type::BISHOP:
+				pieceMoves = board->m_cases[p64]->movesForBishop(p64, board, c);
+				moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+				break;
+			
+			case Type::KNIGHT:
+				pieceMoves = board->m_cases[p64]->movesForKnight(p64, board, c);
+				moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+				break;
+			
+			case Type::PAWN: 
+				pieceMoves = board->m_cases[p64]->movesForPawn(p64, board, c);
+				moves.insert(moves.end(), pieceMoves.begin(), pieceMoves.end());
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	return moves;
+}

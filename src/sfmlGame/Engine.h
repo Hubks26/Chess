@@ -29,8 +29,6 @@ private :
 	int m_posOfSelectedPiece;
 	bool m_mouseL, m_mouseLPressed;
 	sf::Sprite m_pieceSprite;
-
-	Promotion m_test_promo;
 };
 
 #endif //ENGINE_H

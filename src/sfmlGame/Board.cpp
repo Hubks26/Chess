@@ -58,23 +58,48 @@ Board::Board(std::string fen)
 	
 	m_nbRep = std::stoi(vectFen[4]);
 	m_nbMoves = std::stoi(vectFen[5]);
+
+	m_posOfSelectedPiece = -1;
 }
 
 void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	sf::RectangleShape rectangle;
 	rectangle.setSize(sf::Vector2f((target.getSize().x)/8.f, (target.getSize().y)/8.f));
+	ListOfMoves moves;
+
+	if (m_posOfSelectedPiece >= 0)
+	{
+		moves = m_cases[m_posOfSelectedPiece]->movesForPiece(m_posOfSelectedPiece, this, (m_whiteToPlay ? Color::WHITE : Color::BLACK));
+	}
 	
 	for (std::size_t i = 0; i < 8; ++i)
 	{
 		for (std::size_t j = 0; j < 8; ++j)
-		{
+		{	
 			rectangle.setPosition((i*target.getSize().x)/8, (j*target.getSize().y)/8);
 			if((i+j)%2 == 0)
 				rectangle.setFillColor(sf::Color(240, 217, 181));
 			else
 				rectangle.setFillColor(sf::Color(181, 136, 99));
+
 			target.draw(rectangle, states);
+
+			if (m_posOfSelectedPiece != -1 && 
+				unsigned(m_posOfSelectedPiece) == i + 8*j &&
+				m_cases[m_posOfSelectedPiece]->m_color == (m_whiteToPlay ? Color::WHITE : Color::BLACK))
+			{
+				rectangle.setFillColor(sf::Color(230, 110, 30, 150));
+				target.draw(rectangle, states);
+			}
+			for (auto it = moves.begin(); it != moves.end(); ++it)
+			{
+				if (std::get<1>(*it) == i + 8*j)
+				{
+					rectangle.setFillColor(sf::Color(130, 200, 70, 150));
+					target.draw(rectangle, states);
+				}
+			}
 			
 			sf::Sprite sprite = m_cases[i+j*8]->getSprite();
 			sf::FloatRect rectPiece = sprite.getLocalBounds();
