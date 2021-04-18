@@ -270,6 +270,7 @@ void Board::moveAPiece(std::tuple<int, int, Type> move)
 				{m_caseEnPassant = p64AfterMove - 8;}
 			else if (p64/8-p64AfterMove/8 == 2)
 				{m_caseEnPassant = p64AfterMove + 8;}
+			else {m_caseEnPassant = -1;}
 		}
 		else {m_caseEnPassant = -1;}
 
@@ -280,6 +281,8 @@ void Board::moveAPiece(std::tuple<int, int, Type> move)
 
 		toggleTurn();
 	}
+
+	std::cout << m_caseEnPassant << std::endl;
 }
 
 bool Board::isPieceUnderAttack(unsigned int p64, Color c) const
