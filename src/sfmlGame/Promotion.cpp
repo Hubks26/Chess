@@ -4,7 +4,6 @@ Promotion::Promotion(unsigned int col, Color c, sf::Window& window)
 : m_col(col)
 , m_color(c)
 , m_window(window)
-, m_promotionType(Type::None)
 {
     m_choices.push_back(new Piece(m_color, Type::QUEEN));
     m_choices.push_back(new Piece(m_color, Type::KNIGHT));

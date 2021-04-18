@@ -19,7 +19,6 @@ class Promotion : public sf::Drawable
         unsigned int m_col;
         Color m_color;
         sf::Window& m_window;
-        Type m_promotionType;
         std::vector<Piece*> m_choices;
 
 };

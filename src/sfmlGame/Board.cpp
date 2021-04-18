@@ -94,7 +94,10 @@ void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			}
 			for (auto it = moves.begin(); it != moves.end(); ++it)
 			{
-				if (std::get<1>(*it) == i + 8*j)
+				if (std::get<1>(*it) == i + 8*j &&
+					std::get<2>(*it) != Type::BISHOP &&
+					std::get<2>(*it) != Type::KNIGHT &&
+					std::get<2>(*it) != Type::ROOK)
 				{
 					rectangle.setFillColor(sf::Color(130, 200, 70, 150));
 					target.draw(rectangle, states);
