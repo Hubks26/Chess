@@ -65,42 +65,42 @@ void Engine::update()
 		if (m_mouseL)
 		{
 			m_posOfSelectedPiece = deduceCaseFromMousePosition();
-			if (m_posOfSelectedPiece == m_promotionDisp.m_col &&
+			if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col &&
 				m_promotionDisp.m_color == Color::WHITE)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col, Type::QUEEN));
 			}
-			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 8 &&
+			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 8 &&
 				m_promotionDisp.m_color == Color::WHITE)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col, Type::KNIGHT));
 			}
-			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 16 &&
+			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 16 &&
 				m_promotionDisp.m_color == Color::WHITE)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col, Type::ROOK));
 			}
-			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 24 &&
+			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 24 &&
 				m_promotionDisp.m_color == Color::WHITE)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col, Type::BISHOP));
 			}
-			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 32 &&
+			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 32 &&
 				m_promotionDisp.m_color == Color::BLACK)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col+7*8, Type::BISHOP));
 			}
-			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 40 &&
+			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 40 &&
 				m_promotionDisp.m_color == Color::BLACK)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col+7*8, Type::ROOK));
 			}
-			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 48 &&
+			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 48 &&
 				m_promotionDisp.m_color == Color::BLACK)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col+7*8, Type::KNIGHT));
 			}
-			else if (m_posOfSelectedPiece == m_promotionDisp.m_col + 56 &&
+			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 56 &&
 				m_promotionDisp.m_color == Color::BLACK)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col+7*8, Type::QUEEN));

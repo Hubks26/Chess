@@ -57,7 +57,8 @@ class Board : public sf::Drawable
 		int m_nbMoves;
 		ListOfMoves m_pgn;
 		int m_posOfSelectedPiece;
-		std::string m_fenOfLastPosition;
+		std::tuple<bool, bool, bool, bool, int> m_stateOfGameInPreviousPosition;
+		std::tuple<int, Piece*> m_pieceTook;
 };
 
 #endif //PIECE_H
