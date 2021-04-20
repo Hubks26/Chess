@@ -294,7 +294,7 @@ ListOfMoves Board::allowedMoves(Color c)
 	for (auto it = all.begin(); it != all.end(); ++it)
 	{
 		if (m_cases[std::get<0>(*it)]->m_type == Type::KING &&
-			abs(int((std::get<0>(*it) - std::get<1>(*it))) == 2))
+			abs(int(std::get<0>(*it)) - int(std::get<1>(*it))) == 2)
 		{
 			moves.push_back(*it);
 		}
