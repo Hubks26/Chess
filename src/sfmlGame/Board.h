@@ -40,6 +40,7 @@ class Board : public sf::Drawable
 		void printBoard() const;
 		void printPGN() const;
 		float getPositionEval() const;
+		void update();
 		
 		
 	private :
@@ -59,6 +60,7 @@ class Board : public sf::Drawable
 		int m_posOfSelectedPiece;
 		std::tuple<bool, bool, bool, bool, int> m_stateOfGameInPreviousPosition;
 		std::tuple<int, Piece*> m_pieceTook;
+		ListOfMoves m_allowedMoves;
 };
 
 #endif //PIECE_H

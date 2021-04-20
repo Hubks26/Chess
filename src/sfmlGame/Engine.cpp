@@ -108,6 +108,8 @@ void Engine::update()
 			m_promotionDisp.close();
 			m_posOfSelectedPiece = -1;
 			m_pawnPositionBeforePromotion = -1;
+
+			m_board.update();
 		}
 	}
 	else
@@ -119,6 +121,7 @@ void Engine::update()
 				m_posOfSelectedPiece = deduceCaseFromMousePosition();
 				m_board.m_posOfSelectedPiece = m_posOfSelectedPiece;
 				this->m_mouseLPressed=true;
+				m_board.update();
 			}
 			if(m_posOfSelectedPiece != -1 && !m_mouseL)
 			{

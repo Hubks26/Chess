@@ -166,8 +166,15 @@ void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
 					std::get<2>(*it) != Type::KNIGHT &&
 					std::get<2>(*it) != Type::ROOK)
 				{
-					rectangle.setFillColor(sf::Color(130, 200, 70, 150));
-					target.draw(rectangle, states);
+					for (auto moveIt = m_allowedMoves.begin(); moveIt != m_allowedMoves.end(); ++moveIt)
+					{
+						if (*it == *moveIt)
+						{
+							rectangle.setFillColor(sf::Color(130, 200, 70, 150));
+							target.draw(rectangle, states);
+							break;
+						}
+					}
 				}
 			}
 			
@@ -286,7 +293,6 @@ ListOfMoves Board::allowedMoves(Color c)
 			undo();
 		}
 	}
-
 	return moves;
 }
 
@@ -470,4 +476,9 @@ bool Board::isKingUnderAttack(Color c) const
 void Board::toggleTurn()
 {
 	m_whiteToPlay = !m_whiteToPlay;
+}
+
+void Board::update()
+{
+	m_allowedMoves = allowedMoves();
 }
