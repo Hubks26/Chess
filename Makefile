@@ -1,7 +1,7 @@
 CC = g++
 EXEC = Chess
 FLAGS = -Wall -Werror -pedantic
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 STD = -std=c++17
 S = src
 O = obj
