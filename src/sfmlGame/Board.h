@@ -28,11 +28,11 @@ class Board : public sf::Drawable
 		Board(std::string fen);
 		
 		ListOfMoves allMoves(Color=Color::Null, bool=false) const;
-		ListOfMoves allowedMoves(Color=Color::Null) const; //Utile ?
+		ListOfMoves allowedMoves(Color=Color::Null);
 		void setPosition(std::string fen);
 		std::string getFEN() const;
-		void moveAPiece(std::tuple<int, int, Type>);
-		bool isMovePossible(std::tuple<int, int, Type>) const;
+		void moveAPiece(std::tuple<int, int, Type>, bool=false);
+		bool isMovePossible(std::tuple<int, int, Type>, bool=false);
 		void undo();
 		void toggleTurn();
 		bool isKingUnderAttack(Color) const;
@@ -57,6 +57,7 @@ class Board : public sf::Drawable
 		int m_nbMoves;
 		ListOfMoves m_pgn;
 		int m_posOfSelectedPiece;
+		std::string m_fenOfLastPosition;
 };
 
 #endif //PIECE_H

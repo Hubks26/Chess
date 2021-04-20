@@ -2,7 +2,18 @@
 
 Board::Board(std::string fen)
 {
+	m_fenOfLastPosition = "";
+	
+	setPosition(fen);
+
+	getFEN();
+}
+
+void Board::setPosition(std::string fen)
+{
 	m_fen = fen;
+	m_cases.clear();
+
 	std::size_t s = m_fen.size();
 	std::vector<std::string> vectFen;
 	std::string num = "12345678";
@@ -60,6 +71,60 @@ Board::Board(std::string fen)
 	m_nbMoves = std::stoi(vectFen[5]);
 
 	m_posOfSelectedPiece = -1;
+}
+
+std::string Board::getFEN() const
+{
+	std::string fen;
+	int space = 0;
+
+	for (std::size_t i = 0; i < 64; ++i)
+	{
+		if (i != 0 && i%8 == 0)
+		{
+			if (space != 0)
+			{
+				fen += space + '0';
+			}
+			fen += '/';
+			space = 0;
+		}
+		if (m_cases[i]->m_code != '-')
+		{
+			if (space != 0)
+			{
+				fen += space + '0';
+			}
+			fen += m_cases[i]->m_code;
+			space = 0;
+		}
+		else
+		{
+			++space;
+		}
+	}
+	fen += ' ';
+
+	if (m_whiteToPlay) {fen += 'w';}
+	else {fen += 'b';}
+	fen += ' ';
+
+	if (m_roqueK) {fen += 'K';}
+	if (m_roqueQ) {fen += 'Q';}
+	if (m_roquek) {fen += 'k';}
+	if (m_roqueQ) {fen += 'q';}
+	if (!m_roqueK && ! m_roqueQ && !m_roquek && !m_roqueq) {fen += '-';}
+	fen += ' ';
+
+	if (m_caseEnPassant == -1) {fen += '-';}
+	else {fen += coord[m_caseEnPassant];}
+	fen += ' ';
+
+	fen += std::to_string(m_nbRep);
+	fen += ' ';
+	fen += std::to_string(m_nbMoves);
+
+	return fen;
 }
 
 void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -191,13 +256,39 @@ ListOfMoves Board::allMoves(Color c, bool dontCallIsAttacked) const
 	return moves;
 }
 
-void Board::moveAPiece(std::tuple<int, int, Type> move)
+ListOfMoves Board::allowedMoves(Color c)
+{
+	ListOfMoves moves;
+	ListOfMoves all = allMoves(c);
+
+	if (c == Color::Null)
+	{
+		if (m_whiteToPlay) {c = Color::WHITE;}
+		else {c = Color::BLACK;}
+	}
+
+	for (auto it = all.begin(); it != all.end(); ++it)
+	{
+		moveAPiece(*it, true);
+		if (!isKingUnderAttack(c))
+		{
+			moves.push_back(*it);
+		}
+		undo();
+	}
+
+	return moves;
+}
+
+void Board::moveAPiece(std::tuple<int, int, Type> move, bool amongAllMoves)
 {
 	int p64 = std::get<0>(move);
 	int p64AfterMove = std::get<1>(move);
 
-	if (isMovePossible(move))
+	if (isMovePossible(move, amongAllMoves))
 	{
+		m_fenOfLastPosition = getFEN();
+
 		m_cases[p64AfterMove] = m_cases[p64];
 		m_cases[p64] = new Piece('-');
 
@@ -272,10 +363,20 @@ void Board::moveAPiece(std::tuple<int, int, Type> move)
 	}
 }
 
-bool Board::isMovePossible(std::tuple<int, int, Type> move) const
+void Board::undo()
+{
+	if (m_fenOfLastPosition != "")
+	{
+		setPosition(m_fenOfLastPosition);
+		m_fen = m_fenOfLastPosition;
+	}
+}
+
+bool Board::isMovePossible(std::tuple<int, int, Type> move, bool amongAllMoves)
 {
 	bool moveExist = false;
-	ListOfMoves moves = allMoves();
+	ListOfMoves moves = amongAllMoves ? allMoves() : allowedMoves();
+
 	for (auto it = moves.begin(); it != moves.end(); ++it)
 	{
 		if (*it == move)
@@ -284,6 +385,7 @@ bool Board::isMovePossible(std::tuple<int, int, Type> move) const
 			break;
 		}
 	}
+
 	return moveExist;
 }
 
@@ -294,8 +396,12 @@ bool Board::isPieceUnderAttack(unsigned int p64, Color c) const
 	moves = allMoves(c, true);
 
 	for (auto it = moves.begin(); it != moves.end(); ++it)
-	{
-		if(std::get<1>(*it) == p64) {flag = true;}
+	{	
+		if(std::get<1>(*it) == p64) 
+		{
+			flag = true;
+			break;
+		}
 	}
 
 	return flag;
@@ -303,7 +409,8 @@ bool Board::isPieceUnderAttack(unsigned int p64, Color c) const
 
 bool Board::isKingUnderAttack(Color c) const
 {
-	unsigned int p64 = -1;
+	unsigned int p64 = 0;
+
 	for(int i = 0; i < 64; ++i)
 	{
 		if(m_cases[i]->m_type == Type::KING && m_cases[i]->m_color == c)
@@ -312,8 +419,7 @@ bool Board::isKingUnderAttack(Color c) const
 			break;
 		}
 	}
-
-	return isPieceUnderAttack(p64, c);
+	return isPieceUnderAttack(p64, (c == Color::WHITE ? Color::BLACK : Color::WHITE));
 }
 
 void Board::toggleTurn()
