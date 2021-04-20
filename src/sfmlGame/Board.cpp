@@ -2,6 +2,14 @@
 
 Board::Board(std::string fen)
 {
+	if (!m_bufferMove.loadFromFile("assets/sounds/son_deplacement.wav"))
+        throw std::runtime_error ("Engine::Engine() - Failed to load 'assets/sounds/son_deplacement.wav'");
+    m_soundMove.setBuffer(m_bufferMove);
+    
+    if (!m_bufferTake.loadFromFile("assets/sounds/son_prise.wav"))
+        throw std::runtime_error ("Engine::Engine() - Failed to load 'assets/sounds/son_prise.wav'");
+    m_soundTake.setBuffer(m_bufferTake);
+
 	setPosition(fen);
 
 	std::get<0>(m_stateOfGameInPreviousPosition) = true;
@@ -152,6 +160,13 @@ void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 			target.draw(rectangle, states);
 
+			if (m_cases[i + 8*j]->m_type == Type::KING &&
+				isPieceUnderAttack(i + j*8, (m_cases[i + 8*j]->m_color == Color::WHITE ? Color::BLACK : Color::WHITE)))
+			{
+				rectangle.setFillColor(sf::Color(230, 50, 50, 190));
+				target.draw(rectangle, states);
+			}
+
 			if (m_posOfSelectedPiece != -1 && 
 				unsigned(m_posOfSelectedPiece) == i + 8*j &&
 				m_cases[m_posOfSelectedPiece]->m_color == (m_whiteToPlay ? Color::WHITE : Color::BLACK))
@@ -279,7 +294,7 @@ ListOfMoves Board::allowedMoves(Color c)
 	for (auto it = all.begin(); it != all.end(); ++it)
 	{
 		if (m_cases[std::get<0>(*it)]->m_type == Type::KING &&
-			abs(std::get<0>(*it) - std::get<1>(*it)) == 2)
+			abs(int((std::get<0>(*it) - std::get<1>(*it))) == 2))
 		{
 			moves.push_back(*it);
 		}
@@ -303,6 +318,16 @@ void Board::moveAPiece(std::tuple<int, int, Type> move, bool amongAllMoves)
 
 	if (isMovePossible(move, amongAllMoves))
 	{
+		if (!amongAllMoves)
+		{
+			if (m_cases[std::get<0>(move)]->m_type == Type::PAWN && std::get<1>(move) == m_caseEnPassant)
+				m_soundTake.play();
+			else if (m_cases[std::get<1>(move)]->m_type == Type::None)
+				m_soundMove.play();
+			else
+				m_soundTake.play();
+		}
+
 		m_pgn.emplace_back(move);
 		std::get<0>(m_stateOfGameInPreviousPosition) = m_roqueK;
 		std::get<1>(m_stateOfGameInPreviousPosition) = m_roqueQ;

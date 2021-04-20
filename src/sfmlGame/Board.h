@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <string>
 #include <iostream>
 
@@ -61,6 +62,11 @@ class Board : public sf::Drawable
 		std::tuple<bool, bool, bool, bool, int> m_stateOfGameInPreviousPosition;
 		std::tuple<int, Piece*> m_pieceTook;
 		ListOfMoves m_allowedMoves;
+
+		sf::SoundBuffer m_bufferMove;
+    	sf::SoundBuffer m_bufferTake;
+    	sf::Sound m_soundMove;
+		sf::Sound m_soundTake;
 };
 
 #endif //PIECE_H
