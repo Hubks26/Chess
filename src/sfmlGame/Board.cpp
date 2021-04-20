@@ -481,4 +481,20 @@ void Board::toggleTurn()
 void Board::update()
 {
 	m_allowedMoves = allowedMoves();
+
+	if (m_allowedMoves.size() == 0)
+	{
+		if (isKingUnderAttack(Color::WHITE))
+		{
+			std::cout << "Victoire des NOIRS !" << std::endl;
+		}
+		else if (isKingUnderAttack(Color::BLACK))
+		{
+			std::cout << "Victoire des BLANCS !" << std::endl;
+		}
+		else
+		{
+			std::cout << "C'est un PAT !" << std::endl;
+		}
+	}
 }

@@ -11,6 +11,13 @@ Engine::Engine()
 , m_promotionDisp(0, Color::Null, m_window)
 , m_pawnPositionBeforePromotion(-1)
 {
+	if (!m_bufferMove.loadFromFile("assets/sounds/son_deplacement.wav"))
+        throw std::runtime_error ("Engine::Engine() - Failed to load 'assets/sounds/son_deplacement.wav'");
+    m_soundMove.setBuffer(m_bufferMove);
+    
+    if (!m_bufferTake.loadFromFile("assets/sounds/son_prise.wav"))
+        throw std::runtime_error ("Engine::Engine() - Failed to load 'assets/sounds/son_prise.wav'");
+    m_soundTake.setBuffer(m_bufferTake);
 }
 
 void Engine::run()
@@ -69,41 +76,49 @@ void Engine::update()
 				m_promotionDisp.m_color == Color::WHITE)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col, Type::QUEEN));
+				m_soundMove.play();
 			}
 			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 8 &&
 				m_promotionDisp.m_color == Color::WHITE)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col, Type::KNIGHT));
+				m_soundMove.play();
 			}
 			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 16 &&
 				m_promotionDisp.m_color == Color::WHITE)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col, Type::ROOK));
+				m_soundMove.play();
 			}
 			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 24 &&
 				m_promotionDisp.m_color == Color::WHITE)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col, Type::BISHOP));
+				m_soundMove.play();
 			}
 			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 32 &&
 				m_promotionDisp.m_color == Color::BLACK)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col+7*8, Type::BISHOP));
+				m_soundMove.play();
 			}
 			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 40 &&
 				m_promotionDisp.m_color == Color::BLACK)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col+7*8, Type::ROOK));
+				m_soundMove.play();
 			}
 			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 48 &&
 				m_promotionDisp.m_color == Color::BLACK)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col+7*8, Type::KNIGHT));
+				m_soundMove.play();
 			}
 			else if (m_posOfSelectedPiece != -1 && unsigned(m_posOfSelectedPiece) == m_promotionDisp.m_col + 56 &&
 				m_promotionDisp.m_color == Color::BLACK)
 			{
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_pawnPositionBeforePromotion, m_promotionDisp.m_col+7*8, Type::QUEEN));
+				m_soundMove.play();
 			}
 			m_promotionDisp.close();
 			m_posOfSelectedPiece = -1;
@@ -121,6 +136,7 @@ void Engine::update()
 				m_posOfSelectedPiece = deduceCaseFromMousePosition();
 				m_board.m_posOfSelectedPiece = m_posOfSelectedPiece;
 				this->m_mouseLPressed=true;
+
 				m_board.update();
 			}
 			if(m_posOfSelectedPiece != -1 && !m_mouseL)
@@ -149,9 +165,14 @@ void Engine::update()
 					}
 				}
 
+				if (m_board.m_cases[pAfterMove]->m_type != Type::None) {m_soundTake.play();}
+				else {m_soundMove.play();}
 				m_board.moveAPiece(std::tuple<int, int, Type>(m_posOfSelectedPiece, pAfterMove, Type::None));
+				
 				m_posOfSelectedPiece = -1;
 				m_board.m_posOfSelectedPiece = -1;
+
+				m_board.update();
 			}
 		}
 	}

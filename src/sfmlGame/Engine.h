@@ -1,6 +1,8 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include <SFML/Audio.hpp>
+
 #include "Board.h"
 #include "Promotion.h"
 
@@ -32,6 +34,11 @@ private :
 	sf::Sprite m_pieceSprite;
 	Promotion m_promotionDisp;
 	int m_pawnPositionBeforePromotion;
+
+	sf::SoundBuffer m_bufferMove;
+    sf::SoundBuffer m_bufferTake;
+    sf::Sound m_soundMove;
+	sf::Sound m_soundTake;
 };
 
 #endif //ENGINE_H
