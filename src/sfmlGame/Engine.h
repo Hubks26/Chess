@@ -3,6 +3,7 @@
 
 #include "Board.h"
 #include "Promotion.h"
+#include "../chessEngine/Random.h"
 
 class Engine
 {

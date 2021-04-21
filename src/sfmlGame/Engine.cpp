@@ -60,7 +60,7 @@ void Engine::update()
 {
 	int pAfterMove;
 
-	if (m_promotionDisp.isOpen() && isInsideWindow())
+	if (m_promotionDisp.isOpen() && isInsideWindow() )
 	{
 		if (m_mouseL)
 		{
@@ -112,7 +112,7 @@ void Engine::update()
 			m_board.update();
 		}
 	}
-	else
+	else if (m_board.m_whiteToPlay)
 	{
 		if (isInsideWindow())
 		{
@@ -158,6 +158,11 @@ void Engine::update()
 				m_board.update();
 			}
 		}
+	}
+	else
+	{
+		Random motor;
+		m_board.moveAPiece(motor.getMove(m_board));
 	}
 
 	if (m_posOfSelectedPiece != -1)
