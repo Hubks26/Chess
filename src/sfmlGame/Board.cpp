@@ -429,7 +429,6 @@ void Board::moveAPiece(std::tuple<int, int, Type> move, bool amongAllMoves)
 
 void Board::undo()
 {
-	//Cette fonction revient à la position précédente (ne fonctionne pas en cas de roque)
 	if (m_pgn.size() != 0)
 	{
 		std::size_t s = m_pgn.size();
@@ -449,6 +448,30 @@ void Board::undo()
 			m_cases[lastPos] = m_cases[newPos];
 			m_cases[newPos] = new Piece('-');
 			m_cases[std::get<0>(m_piecesTooked[m_piecesTooked.size() - 1])] = std::get<1>(m_piecesTooked[m_piecesTooked.size() - 1]);
+
+			if (m_cases[lastPos]->m_type == Type::KING)
+			{
+				if (lastPos == 4 && newPos == 6)
+				{
+					m_cases[7] = m_cases[lastPos + 1];
+					m_cases[lastPos + 1] = new Piece('-');
+				}
+				else if (lastPos == 4 && newPos == 2)
+				{
+					m_cases[0] = m_cases[lastPos - 1];
+					m_cases[lastPos - 1] = new Piece('-');
+				}
+				else if (lastPos == 60 && newPos == 62)
+				{
+					m_cases[63] = m_cases[lastPos + 1];
+					m_cases[lastPos + 1] = new Piece('-');
+				}
+				else if (lastPos == 60 && newPos == 58)
+				{
+					m_cases[56] = m_cases[lastPos - 1];
+					m_cases[lastPos - 1] = new Piece('-');
+				}
+			}
 		}
 		else 
 		{
