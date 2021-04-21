@@ -11,7 +11,7 @@ class Random : public Motor
 	public :
 		Random();
 
-        virtual Move getMove(Board& board);
+        virtual Move getMove(Board&);
 };
 
 #endif //RANDOM_H

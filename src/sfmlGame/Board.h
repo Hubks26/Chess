@@ -9,6 +9,7 @@
 #include "Piece.h"
 
 using ListOfMoves = std::vector<std::tuple<unsigned int, unsigned int, Type>>;
+using StateGame = std::tuple<bool, bool, bool, bool, int>;
 
 class Board : public sf::Drawable
 {
@@ -39,8 +40,7 @@ class Board : public sf::Drawable
 		bool isKingUnderAttack(Color) const;
 		bool isPieceUnderAttack(unsigned int, Color) const;
 		void printBoard() const;
-		void printPGN() const;
-		float getPositionEval() const;
+		void printHistory() const;
 		void update();
 		
 		
@@ -59,8 +59,8 @@ class Board : public sf::Drawable
 		int m_nbMoves;
 		ListOfMoves m_pgn;
 		int m_posOfSelectedPiece;
-		std::tuple<bool, bool, bool, bool, int> m_stateOfGameInPreviousPosition;
-		std::tuple<int, Piece*> m_pieceTook;
+		std::vector<StateGame> m_gameStates;
+		std::vector<std::tuple<int, Piece*>> m_piecesTooked;
 		ListOfMoves m_allowedMoves;
 
 		sf::SoundBuffer m_bufferMove;

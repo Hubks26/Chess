@@ -71,6 +71,7 @@ Piece::Piece(char c)
 			
 		default:
 			m_type = Type::None;
+			m_value = 0;
 			break;
 	}
 	
@@ -107,24 +108,31 @@ Piece::Piece(Color c, Type type)
 	{
 		case Type::PAWN:
 			c_min = 'p';
+			m_value = 1;
 			break;
 		case Type::KNIGHT:
 			c_min = 'n';
+			m_value = 3;
 			break;
 		case Type::BISHOP:
 			c_min = 'b';
+			m_value = 3;
 			break;
 		case Type::ROOK:
 			c_min = 'r';
+			m_value = 5;
 			break;
 		case Type::QUEEN:
 			c_min = 'q';
+			m_value = 9;
 			break;
 		case Type::KING:
 			c_min = 'k';
+			m_value = 1000;
 			break;
 		default:
 			c_min = '-';
+			m_value = 0;
 			break;
 	}
 

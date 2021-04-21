@@ -10,6 +10,8 @@ Engine::Engine()
 , m_mouseLPressed(false)
 , m_promotionDisp(0, Color::Null, m_window)
 , m_pawnPositionBeforePromotion(-1)
+, m_left(false)
+, m_leftPressed(false)
 {
 }
 
@@ -44,6 +46,18 @@ void Engine::processEvents()
 
 			case sf::Event::MouseButtonReleased:
 				handleMouseInput(event.mouseButton.button, false);
+				break;
+
+			case sf::Event::KeyPressed:
+				if(event.key.code == sf::Keyboard::Left){m_left = true;}
+				break;
+
+			case sf::Event::KeyReleased:
+				if(event.key.code == sf::Keyboard::Left)
+				{
+					m_leftPressed = false;
+					m_left = false;
+				}
 				break;
 
 			case sf::Event::Closed:
@@ -114,6 +128,13 @@ void Engine::update()
 	}
 	else if (m_board.m_whiteToPlay)
 	{
+		if (m_left && !m_leftPressed)
+		{
+			m_board.undo();
+			m_board.undo();
+			m_leftPressed = true;
+		}
+
 		if (isInsideWindow())
 		{
 			if(m_mouseL && !m_mouseLPressed)
@@ -162,6 +183,7 @@ void Engine::update()
 	else
 	{
 		Random motor;
+		sf::sleep(sf::seconds(1));
 		m_board.moveAPiece(motor.getMove(m_board));
 	}
 

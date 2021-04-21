@@ -28,7 +28,7 @@ class Motor
 	public :
 		Motor();
 		
-        virtual Move getMove(Board& board) = 0;
+        virtual Move getMove(Board&) = 0;
 };
 
 #endif //MOTOR_H

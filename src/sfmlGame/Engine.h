@@ -33,6 +33,7 @@ private :
 	sf::Sprite m_pieceSprite;
 	Promotion m_promotionDisp;
 	int m_pawnPositionBeforePromotion;
+	bool m_left, m_leftPressed;
 };
 
 #endif //ENGINE_H

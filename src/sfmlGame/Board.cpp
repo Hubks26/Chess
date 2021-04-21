@@ -12,11 +12,7 @@ Board::Board(std::string fen)
 
 	setPosition(fen);
 
-	std::get<0>(m_stateOfGameInPreviousPosition) = true;
-	std::get<1>(m_stateOfGameInPreviousPosition) = true;
-	std::get<2>(m_stateOfGameInPreviousPosition) = true;
-	std::get<3>(m_stateOfGameInPreviousPosition) = true;
-	std::get<4>(m_stateOfGameInPreviousPosition) = -1;
+	m_gameStates.emplace_back(true, true, true, true, -1);
 }
 
 void Board::setPosition(std::string fen)
@@ -167,6 +163,12 @@ void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const
 				target.draw(rectangle, states);
 			}
 
+			if (m_pgn.size() != 0 && (std::get<0>(m_pgn[m_pgn.size()-1]) == i+8*j || std::get<1>(m_pgn[m_pgn.size()-1]) == i+8*j))
+			{
+				rectangle.setFillColor(sf::Color(240, 240, 0, 90));
+				target.draw(rectangle, states);
+			}
+
 			if (m_posOfSelectedPiece != -1 && 
 				unsigned(m_posOfSelectedPiece) == i + 8*j &&
 				m_cases[m_posOfSelectedPiece]->m_color == (m_whiteToPlay ? Color::WHITE : Color::BLACK))
@@ -221,6 +223,16 @@ void Board::printBoard() const
 	if (m_whiteToPlay)
 		std::cout << " White to play" << std::endl;
 	else std::cout << " Black to play" << std::endl;
+}
+
+void Board::printHistory() const
+{
+	for(std::size_t i = 0; i < m_pgn.size(); ++i)
+	{
+		std::cout << "Move : " << coord[std::get<0>(m_pgn[i])] << "->" << coord[std::get<1>(m_pgn[i])] << " --- ";
+		std::cout << (i+1)/2 << std::endl;
+	}
+	std::cout << std::endl;
 }
 
 ListOfMoves Board::allMoves(Color c, bool dontCallIsAttacked) const
@@ -329,13 +341,8 @@ void Board::moveAPiece(std::tuple<int, int, Type> move, bool amongAllMoves)
 		}
 
 		m_pgn.emplace_back(move);
-		std::get<0>(m_stateOfGameInPreviousPosition) = m_roqueK;
-		std::get<1>(m_stateOfGameInPreviousPosition) = m_roqueQ;
-		std::get<2>(m_stateOfGameInPreviousPosition) = m_roquek;
-		std::get<3>(m_stateOfGameInPreviousPosition) = m_roqueq;
-		std::get<4>(m_stateOfGameInPreviousPosition) = m_caseEnPassant;
-		std::get<0>(m_pieceTook) = p64AfterMove;
-		std::get<1>(m_pieceTook) = m_cases[p64AfterMove];
+
+		m_piecesTooked.emplace_back(p64AfterMove, m_cases[p64AfterMove]);
 
 		m_cases[p64AfterMove] = m_cases[p64];
 		m_cases[p64] = new Piece('-');
@@ -387,17 +394,17 @@ void Board::moveAPiece(std::tuple<int, int, Type> move, bool amongAllMoves)
 			p64AfterMove == m_caseEnPassant)
 		{
 			if (p64AfterMove/8 == 2)
-				{
-					std::get<0>(m_pieceTook) = p64AfterMove + 8;
-					std::get<1>(m_pieceTook) = m_cases[p64AfterMove + 8];
-					m_cases[p64AfterMove + 8] = new Piece('-');
-				}
+			{
+				std::get<0>(m_piecesTooked[m_piecesTooked.size() - 1]) = p64AfterMove + 8;
+				std::get<1>(m_piecesTooked[m_piecesTooked.size() - 1]) = m_cases[p64AfterMove + 8];
+				m_cases[p64AfterMove + 8] = new Piece('-');
+			}
 			else if (p64AfterMove/8 == 5)
-				{
-					std::get<0>(m_pieceTook) = p64AfterMove - 8;
-					std::get<1>(m_pieceTook) = m_cases[p64AfterMove - 8];
-					m_cases[p64AfterMove - 8] = new Piece('-');
-				}
+			{
+				std::get<0>(m_piecesTooked[m_piecesTooked.size() - 1]) = p64AfterMove - 8;
+				std::get<1>(m_piecesTooked[m_piecesTooked.size() - 1]) = m_cases[p64AfterMove - 8];
+				m_cases[p64AfterMove - 8] = new Piece('-');
+			}
 		}
 
 		if (m_cases[p64AfterMove]->m_type == Type::PAWN)
@@ -415,6 +422,7 @@ void Board::moveAPiece(std::tuple<int, int, Type> move, bool amongAllMoves)
 			m_cases[p64AfterMove] = new Piece(m_cases[p64AfterMove]->m_color, std::get<2>(move));
 		}
 
+		m_gameStates.emplace_back(m_roqueK, m_roqueQ, m_roquek, m_roqueq, m_caseEnPassant);
 		toggleTurn();
 	}
 }
@@ -422,30 +430,35 @@ void Board::moveAPiece(std::tuple<int, int, Type> move, bool amongAllMoves)
 void Board::undo()
 {
 	//Cette fonction revient à la position précédente (ne fonctionne pas en cas de roque)
-
-	std::size_t s = m_pgn.size();
-	int lastPos = std::get<0>(m_pgn[s-1]);
-	int newPos = std::get<1>(m_pgn[s-1]);
-
-	m_roqueK = std::get<0>(m_stateOfGameInPreviousPosition);
-	m_roqueQ = std::get<1>(m_stateOfGameInPreviousPosition);
-	m_roquek = std::get<2>(m_stateOfGameInPreviousPosition);
-	m_roqueq = std::get<3>(m_stateOfGameInPreviousPosition);
-	m_caseEnPassant = std::get<4>(m_stateOfGameInPreviousPosition);
-
-	if (std::get<2>(m_pgn[s-1]) == Type::None)
+	if (m_pgn.size() != 0)
 	{
-		m_cases[lastPos] = m_cases[newPos];
-		m_cases[newPos] = new Piece('-');
-		m_cases[std::get<0>(m_pieceTook)] = std::get<1>(m_pieceTook);
-	}
-	else 
-	{
-		m_cases[lastPos] = new Piece(m_cases[newPos]->m_color, Type::PAWN);
-		m_cases[std::get<0>(m_pieceTook)] = std::get<1>(m_pieceTook);
-	}
+		std::size_t s = m_pgn.size();
+		int lastPos = std::get<0>(m_pgn[s-1]);
+		int newPos = std::get<1>(m_pgn[s-1]);
+		m_pgn.pop_back();
 
-	toggleTurn();
+		m_roqueK = std::get<0>(m_gameStates[s-1]);
+		m_roqueQ = std::get<1>(m_gameStates[s-1]);
+		m_roquek = std::get<2>(m_gameStates[s-1]);
+		m_roqueq = std::get<3>(m_gameStates[s-1]);
+		m_caseEnPassant = std::get<4>(m_gameStates[s-1]);
+		m_gameStates.pop_back();
+
+		if (std::get<2>(m_pgn[s-1]) == Type::None)
+		{
+			m_cases[lastPos] = m_cases[newPos];
+			m_cases[newPos] = new Piece('-');
+			m_cases[std::get<0>(m_piecesTooked[m_piecesTooked.size() - 1])] = std::get<1>(m_piecesTooked[m_piecesTooked.size() - 1]);
+		}
+		else 
+		{
+			m_cases[lastPos] = new Piece(m_cases[newPos]->m_color, Type::PAWN);
+			m_cases[std::get<0>(m_piecesTooked[m_piecesTooked.size() - 1])] = std::get<1>(m_piecesTooked[m_piecesTooked.size() - 1]);
+		}
+
+		m_piecesTooked.pop_back();
+		toggleTurn();
+	}
 }
 
 bool Board::isMovePossible(std::tuple<int, int, Type> move, bool amongAllMoves)
