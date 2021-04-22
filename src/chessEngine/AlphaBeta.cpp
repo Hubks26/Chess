@@ -4,6 +4,7 @@
 AlphaBeta::AlphaBeta(Board& board, Color c)
 : m_board(board)
 , m_color(c)
+, counter(0)
 {
 }
 
@@ -32,13 +33,15 @@ Move AlphaBeta::getMove()
 {
     ListOfMoves legalMoves = m_board.allowedMoves();
     int indexBestMove = 0;
-    int bestScore = 1000;
-    int score;
+    //int bestScore = 1000;
+    //int score;
 
+    counter = 0;
+    /*
     for (std::size_t i = 0; i < legalMoves.size(); ++i)
     {
         m_board.moveAPiece(legalMoves[i], false, false);
-        score = search(2);
+        score = search(1);
         m_board.undo();
         if (score < bestScore)
         {
@@ -46,12 +49,16 @@ Move AlphaBeta::getMove()
             indexBestMove = i;
         }
     }
+    */
+    search(3);
+    std::cout << counter << std::endl;
 
     return legalMoves[indexBestMove];
 }
 
 int AlphaBeta::search(int depth, int alpha, int beta)
 {
+    ++counter;
     if (depth == 0)
     {
         return eval();
@@ -63,7 +70,7 @@ int AlphaBeta::search(int depth, int alpha, int beta)
 
     if (legalMoves.size() == 0)
     {
-        if (m_board.isKingUnderAttack(m_color))
+        if (m_board.isKingUnderAttack(m_board.m_whiteToPlay ? Color::WHITE : Color::BLACK))
         {
             return -1000;
         }
