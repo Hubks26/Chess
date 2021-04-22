@@ -59,6 +59,7 @@ Move AlphaBeta::getMove()
 int AlphaBeta::search(int depth, int alpha, int beta)
 {
     ++counter;
+    std::cout << counter << std::endl;
     if (depth == 0)
     {
         return eval();
