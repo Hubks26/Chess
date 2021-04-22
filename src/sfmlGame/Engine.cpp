@@ -4,7 +4,7 @@ const sf::Time Engine::m_timePerFrame = sf::seconds(1.f/120.f);
 
 Engine::Engine()
 : m_window(sf::VideoMode(656, 656), "Chess")
-, m_board("r3k2r/p1ppqpb1/Bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPB1P1P/R3K2R b KQkq - 0 1")
+, m_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 , m_posOfSelectedPiece(-1)
 , m_mouseL(false)
 , m_mouseLPressed(false)

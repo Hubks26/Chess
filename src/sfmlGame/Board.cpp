@@ -323,12 +323,12 @@ ListOfMoves Board::allowedMoves(Color c)
 	return moves;
 }
 
-void Board::moveAPiece(std::tuple<int, int, Type> move, bool amongAllMoves, bool soundOn)
+void Board::moveAPiece(std::tuple<int, int, Type> move, bool amongAllMoves, bool soundOn, bool needVerification)
 {
 	int p64 = std::get<0>(move);
 	int p64AfterMove = std::get<1>(move);
 
-	if (isMovePossible(move, amongAllMoves))
+	if (!needVerification || isMovePossible(move, amongAllMoves))
 	{
 		if (!amongAllMoves && soundOn)
 		{

@@ -20,7 +20,6 @@ class AlphaBeta : public Motor
     private :
         Board& m_board;
         Color m_color;
-        int counter;
 };
 
 #endif //ALPHA_BETA_H
