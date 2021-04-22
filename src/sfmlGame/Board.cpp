@@ -305,20 +305,12 @@ ListOfMoves Board::allowedMoves(Color c)
 
 	for (auto it = all.begin(); it != all.end(); ++it)
 	{
-		if (m_cases[std::get<0>(*it)]->m_type == Type::KING &&
-			abs(int(std::get<0>(*it)) - int(std::get<1>(*it))) == 2)
+		moveAPiece(*it, true, false, false);
+		if (!isKingUnderAttack(c))
 		{
-			moves.push_back(*it);
+			moves.emplace_back(*it);
 		}
-		else
-		{
-			moveAPiece(*it, true);
-			if (!isKingUnderAttack(c))
-			{
-				moves.push_back(*it);
-			}
-			undo();
-		}
+		undo();
 	}
 	return moves;
 }

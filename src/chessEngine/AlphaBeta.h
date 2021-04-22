@@ -20,6 +20,7 @@ class AlphaBeta : public Motor
     private :
         Board& m_board;
         Color m_color;
+        double m_tempsTotal;
 };
 
 #endif //ALPHA_BETA_H

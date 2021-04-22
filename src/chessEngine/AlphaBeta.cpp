@@ -4,6 +4,7 @@
 AlphaBeta::AlphaBeta(Board& board, Color c)
 : m_board(board)
 , m_color(c)
+, m_tempsTotal(0.f)
 {
 }
 
@@ -34,6 +35,10 @@ Move AlphaBeta::getMove()
     int indexBestMove = 0;
     int bestScore = 1000;
     int score;
+
+    unsigned seed = std::chrono::steady_clock::now().time_since_epoch().count();
+	std::default_random_engine generator(seed);
+	std::shuffle(legalMoves.begin(), legalMoves.end(), generator);
 
     for (std::size_t i = 0; i < legalMoves.size(); ++i)
     {
