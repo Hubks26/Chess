@@ -13,7 +13,7 @@ all: $(O) $(B) $(O)/Main.o
 $(O)/Main.o: $(O)/Engine.o
 	$(CC) $(S)/Main.cpp -c -o $(O)/Main.o $(STD) $(FLAGS)
 
-$(O)/Engine.o: $(O)/Board.o $(O)/Promotion.o $(O)/Random.o
+$(O)/Engine.o: $(O)/Board.o $(O)/Promotion.o $(O)/AlphaBeta.o
 	$(CC) $(S)/sfmlGame/Engine.cpp -c -o $(O)/Engine.o $(STD) $(FLAGS)
 
 $(O)/Promotion.o: $(O)/Piece.o
@@ -25,8 +25,8 @@ $(O)/Board.o: $(O)/Piece.o
 $(O)/Piece.o:
 	$(CC) $(S)/sfmlGame/Piece.cpp -c -o $(O)/Piece.o $(STD) $(FLAGS)
 
-$(O)/Random.o: $(O)/Motor.o
-	$(CC) $(S)/chessEngine/Random.cpp -c -o $(O)/Random.o $(STD) $(FLAGS)
+$(O)/AlphaBeta.o: $(O)/Motor.o
+	$(CC) $(S)/chessEngine/AlphaBeta.cpp -c -o $(O)/AlphaBeta.o $(STD) $(FLAGS)
 
 $(O)/Motor.o:
 	$(CC) $(S)/chessEngine/Motor.cpp -c -o $(O)/Motor.o $(STD) $(FLAGS)

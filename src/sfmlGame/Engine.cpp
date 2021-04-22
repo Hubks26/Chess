@@ -12,6 +12,8 @@ Engine::Engine()
 , m_pawnPositionBeforePromotion(-1)
 , m_left(false)
 , m_leftPressed(false)
+, m_isGameEnded(false)
+, m_motor(m_board, Color::BLACK)
 {
 }
 
@@ -182,9 +184,19 @@ void Engine::update()
 	}
 	else
 	{
-		Random motor;
-		sf::sleep(sf::seconds(1));
-		m_board.moveAPiece(motor.getMove(m_board));
+		if (m_board.allowedMoves().size() != 0)
+		{
+			//sf::sleep(sf::seconds(1));
+			m_board.moveAPiece(m_motor.getMove());
+		}
+		else
+		{
+			if (m_left && !m_leftPressed)
+			{
+				m_board.undo();
+				m_leftPressed = true;
+			}
+		}
 	}
 
 	if (m_posOfSelectedPiece != -1)

@@ -9,9 +9,12 @@
 class Random : public Motor
 {
 	public :
-		Random();
+		Random(Board&);
 
-        virtual Move getMove(Board&);
+        virtual Move getMove();
+
+	private :
+		Board& m_board;
 };
 
 #endif //RANDOM_H

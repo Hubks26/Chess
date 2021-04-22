@@ -9,10 +9,17 @@
 class AlphaBeta : public Motor
 {
 	public :
-		AlphaBeta();
+		AlphaBeta(Board&, Color);
 
-        int eval(Board&);
-        virtual Move getMove(Board&);
+        int eval();
+        virtual Move getMove();
+
+    private :
+        int search(int depth, int alpha=-1000, int beta=1000);
+
+    private :
+        Board& m_board;
+        Color m_color;
 };
 
 #endif //ALPHA_BETA_H

@@ -33,7 +33,7 @@ class Board : public sf::Drawable
 		ListOfMoves allowedMoves(Color=Color::Null);
 		void setPosition(std::string fen);
 		std::string getFEN() const;
-		void moveAPiece(std::tuple<int, int, Type>, bool=false);
+		void moveAPiece(std::tuple<int, int, Type>, bool=false, bool=true);
 		bool isMovePossible(std::tuple<int, int, Type>, bool=false);
 		void undo();
 		void toggleTurn();

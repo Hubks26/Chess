@@ -3,7 +3,7 @@
 
 #include "Board.h"
 #include "Promotion.h"
-#include "../chessEngine/Random.h"
+#include "../chessEngine/AlphaBeta.h"
 
 class Engine
 {
@@ -34,6 +34,8 @@ private :
 	Promotion m_promotionDisp;
 	int m_pawnPositionBeforePromotion;
 	bool m_left, m_leftPressed;
+	bool m_isGameEnded;
+	AlphaBeta m_motor;
 };
 
 #endif //ENGINE_H

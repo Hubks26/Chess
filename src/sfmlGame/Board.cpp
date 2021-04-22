@@ -323,14 +323,14 @@ ListOfMoves Board::allowedMoves(Color c)
 	return moves;
 }
 
-void Board::moveAPiece(std::tuple<int, int, Type> move, bool amongAllMoves)
+void Board::moveAPiece(std::tuple<int, int, Type> move, bool amongAllMoves, bool soundOn)
 {
 	int p64 = std::get<0>(move);
 	int p64AfterMove = std::get<1>(move);
 
 	if (isMovePossible(move, amongAllMoves))
 	{
-		if (!amongAllMoves)
+		if (!amongAllMoves && soundOn)
 		{
 			if (m_cases[std::get<0>(move)]->m_type == Type::PAWN && std::get<1>(move) == m_caseEnPassant)
 				m_soundTake.play();

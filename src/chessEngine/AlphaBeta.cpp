@@ -1,41 +1,82 @@
 #include "AlphaBeta.h"
 #include "../sfmlGame/Board.h"
 
-AlphaBeta::AlphaBeta()
+AlphaBeta::AlphaBeta(Board& board, Color c)
+: m_board(board)
+, m_color(c)
 {
 }
 
-int AlphaBeta::eval(Board& board)
+int AlphaBeta::eval()
 {
     int score = 0;
 
     for (std::size_t i = 0; i < 64; ++i)
     {
-        if (board.m_cases[i]->m_color == Color::WHITE)
+        if (m_board.m_cases[i]->m_color == Color::WHITE)
         {
-            score += board.m_cases[i]->m_value;
+            score += m_board.m_cases[i]->m_value;
         }
-        else if(board.m_cases[i]->m_color == Color::BLACK)
+        else if(m_board.m_cases[i]->m_color == Color::BLACK)
         {
-            score -= board.m_cases[i]->m_value;
+            score -= m_board.m_cases[i]->m_value;
         }
     }
 
-    int perspective = (board.m_whiteToPlay) ? 1 : -1;
+    int perspective = m_board.m_whiteToPlay ? 1 : -1;
 
     return score*perspective;
 }
 
-Move AlphaBeta::getMove(Board& board)
+Move AlphaBeta::getMove()
 {
-    ListOfMoves legalMoves = board.allowedMoves();
+    ListOfMoves legalMoves = m_board.allowedMoves();
+    int indexBestMove = 0;
+    int bestScore = 1000;
+    int score;
 
-    unsigned seed = std::chrono::steady_clock::now().time_since_epoch().count();
-	std::default_random_engine generator(seed);
-	std::uniform_int_distribution<int> distU(0, legalMoves.size()-1);
-	int index = distU(generator);
+    for (std::size_t i = 0; i < legalMoves.size(); ++i)
+    {
+        m_board.moveAPiece(legalMoves[i], false, false);
+        score = search(2);
+        m_board.undo();
+        if (score < bestScore)
+        {
+            bestScore = score;
+            indexBestMove = i;
+        }
+    }
 
-    Move move = legalMoves[index];
+    return legalMoves[indexBestMove];
+}
 
-    return move;
+int AlphaBeta::search(int depth, int alpha, int beta)
+{
+    if (depth == 0)
+    {
+        return eval();
+    }
+
+    ListOfMoves legalMoves = m_board.allowedMoves();
+
+    int evaluation;
+
+    if (legalMoves.size() == 0)
+    {
+        if (m_board.isKingUnderAttack(m_color))
+        {
+            return -1000;
+        }
+        return 0;
+    }
+
+    for (auto it = legalMoves.begin(); it != legalMoves.end(); ++it)
+    {
+        m_board.moveAPiece(*it, false, false);
+        evaluation = -search(depth - 1, -beta, -alpha);
+        m_board.undo();
+        if (evaluation >= beta) {return beta;}
+        if (evaluation > alpha) {alpha = evaluation;}
+    }
+    return alpha;
 }
